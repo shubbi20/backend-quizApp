@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
+import { Quiz } from './quiz.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -14,11 +22,9 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @Column({
-    default: 'regular',
+  @OneToMany(() => Quiz, (quiz) => quiz.createdBy, {
+    onDelete: 'CASCADE',
   })
-  role: string; //two types 1>regular 2>manager 3>admin
-
-  // @OneToMany(() => RegisteredBike, (registeredBike) => registeredBike.userId)
-  // regBike: RegisteredBike[];
+  @JoinColumn()
+  quizes: Quiz[];
 }

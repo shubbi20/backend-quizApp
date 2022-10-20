@@ -3,12 +3,6 @@ import * as Bcrypt from 'bcryptjs';
 import { User } from 'src/db/entities/user.entity';
 import * as jwt from 'jsonwebtoken';
 
-export enum ERole {
-  x = 'regular',
-  y = 'manager',
-  z = 'admin',
-}
-
 @Injectable()
 export class UserService {
   async signUpUser({
@@ -44,7 +38,8 @@ export class UserService {
 
     return {
       msg: 'successful',
-      ...user,
+      name: user.name,
+      email: user.email,
       token: token,
     };
   }
@@ -77,8 +72,39 @@ export class UserService {
 
     return {
       msg: 'successful',
-      ...user,
+      name: user.name,
+      email: user.email,
       token: token,
+    };
+  }
+
+  async deleteUser(id: number) {
+    // const apart = await Apartment.createQueryBuilder('apart')
+    //   .where('apart.id=:id', { id: id })
+    //   .leftJoinAndSelect('apart.createdBy', 'createdBy')
+    //   .getOne();
+
+    // if (!apart) {
+    //   throw new HttpException(`apartment with this id:${id} is not found`, 404);
+    // }
+
+    // const result = this.checkManagerApartment({
+    //   role,
+    //   id: apart.createdBy.id,
+    //   userId,
+    // });
+    // if (!result) {
+    //   throw new HttpException(
+    //     'manager can only delete his own apartments',
+    //     403,
+    //   );
+    // }
+
+    const user = await User.delete(id);
+
+    return {
+      msg: 'Successfully',
+      Data: user,
     };
   }
 }

@@ -1,7 +1,12 @@
-import { Body, Controller, Post, HttpCode } from '@nestjs/common';
-import { AuthGuard } from 'src/utils/guard/auth.guard';
+import {
+  Body,
+  Controller,
+  Post,
+  HttpCode,
+  Delete,
+  Param,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-
 import {
   loginValidation,
   signupValidation,
@@ -10,7 +15,6 @@ import {
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
   @Post('/signup')
   async userSignUp(
     @Body()
@@ -43,5 +47,10 @@ export class UserController {
       valid.email.trim().toLowerCase(),
       valid.password.trim(),
     );
+  }
+
+  @Delete('delete/:id')
+  async deleteApartment(@Param('id') id) {
+    return this.userService.deleteUser(id);
   }
 }

@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './Module/user/user.controller';
 import { UserService } from './Module/user/user.service';
+import { QuizController } from './Module/quiz/quiz.controller';
+import { QuizService } from './Module/quiz/quiz.service';
 
 const PATH = __dirname + '/db/entities/*.entity{.ts,.js}';
 
@@ -24,7 +26,7 @@ export const sqliteDataSource = new DataSource({
       synchronize: true,
     }),
   ],
-  controllers: [AppController, UserController],
-  providers: [AppService, UserService],
+  controllers: [AppController, UserController, QuizController],
+  providers: [AppService, UserService, QuizService],
 })
 export class AppModule {}

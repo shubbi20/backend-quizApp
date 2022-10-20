@@ -2,13 +2,11 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export interface IAuth {
   id: number;
-
   email: string;
-
   password: string;
-
-  role: string;
+  name: string;
 }
+
 export const Auth = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): IAuth => {
     const request = ctx.switchToHttp().getRequest();
