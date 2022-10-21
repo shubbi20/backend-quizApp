@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Patch,
@@ -108,6 +109,7 @@ export class QuizController {
   }
 
   @Post('/evaluate')
+  @HttpCode(200)
   async evaluateQuiz(
     @Body()
     {
