@@ -195,6 +195,10 @@ export class QuizService {
       })
       .getOne();
 
+    if (!quizData.isPublish) {
+      throw new HttpException('it is not publish yet', 403);
+    }
+
     quizData.questions = quizData.questions.map((ele) => {
       return {
         ...ele,
@@ -228,6 +232,10 @@ export class QuizService {
 
     if (!quizData) {
       throw new HttpException(`quiz not found`, 404);
+    }
+
+    if (!quizData.isPublish) {
+      throw new HttpException('It is not published yet', 403);
     }
 
     let correct = 0;
