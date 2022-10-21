@@ -13,6 +13,7 @@ import { Ques } from 'src/db/entities/quiz.entity';
 import { Auth, IAuth } from 'src/utils/auth.decorator';
 import { AuthGuard } from 'src/utils/guard/auth.guard';
 import {
+  quizEvaluateValidation,
   quizUpdateValidation,
   quizValidation,
 } from 'src/utils/validation/quiz.schema';
@@ -108,8 +109,21 @@ export class QuizController {
 
   @Post('/evaluate')
   async evaluateQuiz(
-    @Body() { questions, permalink }: { questions: Ques[]; permalink: string },
+    @Body()
+    {
+      questions,
+      permalink,
+      role,
+      email,
+    }: {
+      questions: Ques[];
+      permalink: string;
+      role: string;
+      email?: string;
+    },
   ) {
-    return this.quizService.evaluateQuiz({ permalink, questions });
+    const valid = quizEvaluateValidation({ questions, permalink, role, email });
+
+    return this.quizService.evaluateQuiz({ permalink, questions, role, email });
   }
 }

@@ -1,7 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { Ques, Quiz } from 'src/db/entities/quiz.entity';
 import { User } from 'src/db/entities/user.entity';
 import * as lodash from 'lodash';
+import { QuizAttempt } from 'src/db/entities/attempt-quiz.entity';
 
 @Injectable()
 export class QuizService {
@@ -19,10 +20,7 @@ export class QuizService {
     });
 
     if (!user) {
-      throw new HttpException(
-        `User with this email:${email} is not found`,
-        404,
-      );
+      throw new NotFoundException(`User with this email:${email} is not found`);
     }
 
     let permalink = QuizService.getRandomPermaLink();
@@ -32,6 +30,7 @@ export class QuizService {
       if (q) permalink = QuizService.getRandomPermaLink();
       else break;
     }
+
     const quiz = new Quiz();
     quiz.title = title;
     quiz.isPublish = false;
@@ -213,18 +212,24 @@ export class QuizService {
   async evaluateQuiz({
     permalink,
     questions,
+    role,
+    email,
   }: {
     permalink: string;
     questions: Ques[];
+    role: string;
+    email?: string;
   }) {
     let quizData = await Quiz.createQueryBuilder('quiz')
       .where('quiz.permalink = :perma', {
         perma: permalink,
       })
       .getOne();
+
     if (!quizData) {
       throw new HttpException(`quiz not found`, 404);
     }
+
     let correct = 0;
     let wrong = 0;
     const totalScore = quizData.questions.length;
@@ -239,6 +244,29 @@ export class QuizService {
         } else {
           wrong++;
         }
+      }
+    }
+
+    if (role === 'user') {
+      const attemptQuiz = await QuizAttempt.findOneBy({
+        email: email,
+        permalink: permalink,
+      });
+
+      if (!attemptQuiz) {
+        const quizAttempt = new QuizAttempt();
+        quizAttempt.email = email;
+        quizAttempt.permalink = permalink;
+        quizAttempt.lastScore = correct;
+        quizAttempt.highestScore = correct;
+
+        const quizAttemptSave = await quizAttempt.save();
+      } else {
+        const quizUpdate = await QuizAttempt.update(attemptQuiz.id, {
+          attemptCount: attemptQuiz.attemptCount + 1,
+          lastScore: correct,
+          highestScore: Math.max(attemptQuiz.highestScore, correct),
+        });
       }
     }
 
